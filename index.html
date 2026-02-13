@@ -323,6 +323,9 @@ function TagInput({ value, onChange }) {
 }
 
 /* ═══════════════════════  INFUSION INGREDIENTS SELECT  ═══════════════════════ */
+// All default infusion ingredients that should be selected for every product
+const ALL_INFUSION_INGREDIENTS = "Copper, Silver, Zinc, Hyaluronic Acid, Niacinamide, Magnesium, Aloe Vera, Custom";
+
 function InfusionIngredientsSelect({ value, onChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const selected = (value || "").split(",").map(t => t.trim()).filter(Boolean);
@@ -466,7 +469,7 @@ function AdminPanel({ products, onSave, onClose, sheetKey, sheetLabels, onSwitch
   };
 
   const startAdd = () => {
-    setForm({ sku: "", name: "", infusion: "", product_type: "", main_category: "", material: "", colours: "", size: "", unit: "Piece", image: "", _id: generateId() });
+    setForm({ sku: "", name: "", infusion: "", product_type: "", main_category: "", material: "", colours: "", size: "", unit: "Piece", image: "", infusion_ingredients: ALL_INFUSION_INGREDIENTS, _id: generateId() });
     setAdding(true);
     setEditingId(null);
     setPendingImage(null);
@@ -959,11 +962,12 @@ function WellTekCatalogue() {
       const saved = localStorage.getItem("welltek_products");
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Ensure every product has the infusion field
+        // Ensure every product has the infusion field and all infusion ingredients selected
         for (const key of Object.keys(parsed)) {
           parsed[key] = parsed[key].map(p => ({
             ...p,
-            infusion: p.infusion || infusionBySku[p.sku] || ""
+            infusion: p.infusion || infusionBySku[p.sku] || "",
+            infusion_ingredients: p.infusion_ingredients || ALL_INFUSION_INGREDIENTS
           }));
         }
         return parsed;
@@ -971,7 +975,7 @@ function WellTekCatalogue() {
     } catch (e) {}
     const d = {};
     for (const key of ["sheet1", "sheet2"]) {
-      d[key] = CATALOGUE_DATA[key].products.map(p => ({ ...p, _id: generateId() }));
+      d[key] = CATALOGUE_DATA[key].products.map(p => ({ ...p, infusion_ingredients: ALL_INFUSION_INGREDIENTS, _id: generateId() }));
     }
     return d;
   });

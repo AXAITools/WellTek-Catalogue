@@ -955,15 +955,18 @@ function WellTekCatalogue() {
     for (const key of ["sheet1", "sheet2"]) {
       CATALOGUE_DATA[key].products.forEach(p => { if (p.infusion) infusionBySku[p.sku] = p.infusion; });
     }
+    // All available infusion ingredients
+    const allIngredients = "Copper, Silver, Zinc, Hyaluronic Acid, Niacinamide, Magnesium, Aloe Vera, Custom";
     try {
       const saved = localStorage.getItem("welltek_products");
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Ensure every product has the infusion field
+        // Ensure every product has the infusion field and all ingredients selected
         for (const key of Object.keys(parsed)) {
           parsed[key] = parsed[key].map(p => ({
             ...p,
-            infusion: p.infusion || infusionBySku[p.sku] || ""
+            infusion: p.infusion || infusionBySku[p.sku] || "",
+            infusion_ingredients: allIngredients
           }));
         }
         return parsed;
@@ -971,7 +974,11 @@ function WellTekCatalogue() {
     } catch (e) {}
     const d = {};
     for (const key of ["sheet1", "sheet2"]) {
-      d[key] = CATALOGUE_DATA[key].products.map(p => ({ ...p, _id: generateId() }));
+      d[key] = CATALOGUE_DATA[key].products.map(p => ({ 
+        ...p, 
+        _id: generateId(),
+        infusion_ingredients: allIngredients
+      }));
     }
     return d;
   });
@@ -1004,9 +1011,14 @@ function WellTekCatalogue() {
   const handleResetData = useCallback(() => {
     if (confirm("Reset all products to original catalogue data? This will remove any products you've added.")) {
       try { localStorage.removeItem("welltek_products"); localStorage.removeItem("welltek_images"); } catch(e) {}
+      const allIngredients = "Copper, Silver, Zinc, Hyaluronic Acid, Niacinamide, Magnesium, Aloe Vera, Custom";
       const d = {};
       for (const key of ["sheet1", "sheet2"]) {
-        d[key] = CATALOGUE_DATA[key].products.map(p => ({ ...p, _id: generateId() }));
+        d[key] = CATALOGUE_DATA[key].products.map(p => ({ 
+          ...p, 
+          _id: generateId(),
+          infusion_ingredients: allIngredients
+        }));
       }
       setAllProducts(d);
       setImageMap({ ...INITIAL_IMAGE_MAP });

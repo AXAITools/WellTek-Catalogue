@@ -1,0 +1,17 @@
+{
+  "name": "welltek-catalogue",
+  "version": "2.0.0",
+  "description": "WellTek Wellness Infused Wholesale Catalogue",
+  "main": "build.js",
+  "scripts": {
+    "build": "node build.js",
+    "build:custom": "node build.js"
+  },
+  "keywords": [
+    "catalogue",
+    "wellness",
+    "products"
+  ],
+  "author": "WellTek",
+  "license": "MIT"
+}
